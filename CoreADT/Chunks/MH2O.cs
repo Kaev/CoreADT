@@ -42,6 +42,7 @@ namespace CoreADT.Chunks
 
         public MH2O(byte[] chunkBytes) : base(chunkBytes)
         {
+            // TODO: Use global position
             var positionBeforeMH2OHeader = BaseStream.Position;
 
             // MH2OHeader
@@ -49,6 +50,7 @@ namespace CoreADT.Chunks
             LayerCount = ReadUInt32();
             OffsetRenderMask = ReadUInt32();
 
+            // TODO: Use global position
             var positionAfterMH2OHeader = BaseStream.Position;
 
             if (LayerCount > 0)
@@ -65,6 +67,31 @@ namespace CoreADT.Chunks
                 Height = ReadByte();
                 OffsetMask2 = ReadUInt32();
                 OffsetHeightmapData = ReadUInt32();
+
+
+                // MH2OHeightmapData
+                if (OffsetHeightmapData != 0 && Flags != 2)
+                {
+                    BaseStream.Position = positionBeforeMH2OHeader + OffsetHeightmapData;
+                    for (byte i = OffsetY; i < Height + OffsetY; i++)
+                        for (byte j = OffsetX; j < Width + OffsetX; i++)
+                            Heightmap[i, j] = ReadSingle();
+
+                    for (byte i = OffsetY; i < Height + OffsetY; i++)
+                        for (byte j = OffsetX; j < Width + OffsetX; i++)
+                            Transparency[i, j] = ReadByte();
+                }
+
+                // MH2ORenderMask
+                if (OffsetMask2 != 0)
+                {
+                    BaseStream.Position = positionBeforeMH2OHeader + OffsetMask2;
+                    Mask = ReadBytes(8);
+                    Fatigue = ReadBytes(8);
+                }
+
+                BaseStream.Position = positionAfterMH2OHeader;
+
             }
 
         }
