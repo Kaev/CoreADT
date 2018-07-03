@@ -7,6 +7,8 @@ namespace CoreADT.Chunks
     public class MODF : Chunk
     {
 
+        public override uint ChunkSize { get; set; }
+
         public uint MWIDEntry { get; set; }
         public uint UniqueId { get; set; }
         public Vector3<float> Position { get; set; }
@@ -47,6 +49,7 @@ namespace CoreADT.Chunks
             DoodadSet = ReadUInt16();
             NameSet = ReadUInt16();
             Padding = ReadUInt16();
+            Close();
         }
 
         public override byte[] GetChunkBytes()
@@ -73,6 +76,19 @@ namespace CoreADT.Chunks
                     writer.Write(DoodadSet);
                     writer.Write(NameSet);
                     writer.Write(Padding);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        public override byte[] GetChunkHeaderBytes()
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(new char[] { 'D', 'I', 'W', 'M' });
+                    writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
             }

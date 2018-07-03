@@ -5,6 +5,8 @@ namespace CoreADT.Chunks
     public class MVER : Chunk
     {
 
+        public override uint ChunkSize { get; set; } = sizeof(uint);
+
         public uint Version { get; set; }
 
         public MVER(byte[] chunkBytes) : base (chunkBytes)
@@ -20,6 +22,19 @@ namespace CoreADT.Chunks
                 using (var writer = new BinaryWriter(stream))
                 {
                     writer.Write(Version);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        public override byte[] GetChunkHeaderBytes()
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(new char[] {'R', 'E', 'V', 'M'});
+                    writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
             }

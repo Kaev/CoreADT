@@ -6,6 +6,8 @@ namespace CoreADT.Chunks
     class MFBO : Chunk
     {
 
+        public override uint ChunkSize { get; set; } = sizeof(uint) * 18;
+
         public Int16[,] Maximum { get; set; } = new Int16[2, 2];
         public Int16[,] Minimum { get; set; } = new Int16[2, 2];
 
@@ -18,6 +20,7 @@ namespace CoreADT.Chunks
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
                     Minimum[i, j] = ReadInt16();
+            Close();
         }
 
         public override byte[] GetChunkBytes()
@@ -33,6 +36,19 @@ namespace CoreADT.Chunks
                     for (int i = 0; i < 3; i++)
                         for (int j = 0; j < 3; j++)
                             writer.Write(Minimum[i, j]);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        public override byte[] GetChunkHeaderBytes()
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(new char[] { 'O', 'B', 'F', 'M' });
+                    writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
             }

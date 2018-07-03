@@ -6,6 +6,7 @@ namespace CoreADT.Chunks
 {
     public class MDDF : Chunk
     {
+        public override uint ChunkSize { get; set; }
 
         public uint MMIDEntry { get; set; }
         public uint UniqueId { get; set; }
@@ -29,6 +30,7 @@ namespace CoreADT.Chunks
             Rotation.Z = ReadSingle();
             Scale = ReadUInt16();
             Flags = (MDDFFlags)ReadUInt16();
+            Close();
         }
 
         public override byte[] GetChunkBytes()
@@ -47,6 +49,19 @@ namespace CoreADT.Chunks
                     writer.Write(Rotation.Z);
                     writer.Write(Scale);
                     writer.Write((UInt16)Flags);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        public override byte[] GetChunkHeaderBytes()
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(new char[] { 'F', 'D', 'D', 'M' });
+                    writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
             }

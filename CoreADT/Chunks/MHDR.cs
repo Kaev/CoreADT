@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using CoreADT.Helper;
 
 namespace CoreADT.Chunks
 {
     public class MHDR : Chunk
     {
+
+        public override uint ChunkSize { get; set; } = sizeof(uint) * 15;
 
         public MHDRFlags Flags { get; set; }
         public uint OffsetMCIN { get; set; }
@@ -19,7 +20,7 @@ namespace CoreADT.Chunks
         public uint OffsetMFBO { get; set; }
         public uint OffsetMH2O { get; set; }
         public uint OffsetMTXF { get; set; }
-        public List<uint> Unknown { get; set; }
+        public uint[] Unknown { get; set; } = new uint[2];
 
         public MHDR(byte[] chunkBytes) : base(chunkBytes)
         {
@@ -36,7 +37,7 @@ namespace CoreADT.Chunks
             OffsetMH2O = ReadUInt32();
             OffsetMTXF = ReadUInt32();
             for (int i = 0; i < 3; i++)
-                Unknown.Add(ReadUInt32());
+                Unknown[i] = ReadUInt32();
             Close();
         }
 
@@ -58,8 +59,21 @@ namespace CoreADT.Chunks
                     writer.Write(OffsetMFBO);
                     writer.Write(OffsetMH2O);
                     writer.Write(OffsetMTXF);
-                    for(int i = 0; i < Unknown.Count; i++)
+                    for(int i = 0; i < 3; i++)
                         writer.Write(Unknown[i]);
+                }
+                return stream.ToArray();
+            }
+        }
+
+        public override byte[] GetChunkHeaderBytes()
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write(new char[] { 'R', 'D', 'H', 'M' });
+                    writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
             }
