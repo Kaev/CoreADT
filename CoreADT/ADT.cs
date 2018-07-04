@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using CoreADT.Chunks;
-using CoreADT.Helper;
 
 namespace CoreADT
 {

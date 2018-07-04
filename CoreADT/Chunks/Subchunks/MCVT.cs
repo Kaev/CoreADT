@@ -1,19 +1,18 @@
 ﻿using System.IO;
-using CoreADT.Flags;
 
-namespace CoreADT.Chunks
+namespace CoreADT.Chunks.Subchunks
 {
-    class MTXF : Chunk
+    public class MCVT : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint);
+        public override uint ChunkSize { get; set; } = sizeof(float) * 145;
 
-        public MTXFFlags Flags { get; set; }
+        public float[] Height { get; set; } = new float[145];
 
-        public MTXF(byte[] chunkBytes) : base(chunkBytes)
+        public MCVT(byte[] chunkBytes) : base(chunkBytes)
         {
-            Flags = (MTXFFlags)ReadUInt32();
-            Close();
+            for (int i = 0; i < 146; i++)
+                Height[i] = ReadSingle();
         }
 
         public override byte[] GetChunkBytes()
@@ -22,7 +21,8 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write((uint)Flags);
+                    for (int i = 0; i < 146; i++)
+                        writer.Write(Height[i]);
                 }
                 return stream.ToArray();
             }
@@ -34,7 +34,7 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(new char[] { 'F', 'X', 'T', 'M' });
+                    writer.Write(new char[] { 'T', 'V', 'C', 'M' });
                     writer.Write(ChunkSize);
                 }
                 return stream.ToArray();

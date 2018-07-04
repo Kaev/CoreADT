@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CoreADT.Flags;
 using CoreADT.Helper;
 
 namespace CoreADT.Chunks
@@ -22,12 +23,8 @@ namespace CoreADT.Chunks
         {
             MMIDEntry = ReadUInt32();
             UniqueId = ReadUInt32();
-            Position.X = ReadSingle();
-            Position.Y = ReadSingle();
-            Position.Z = ReadSingle();
-            Rotation.X = ReadSingle();
-            Rotation.Y = ReadSingle();
-            Rotation.Z = ReadSingle();
+            Position = this.ReadVector3Float();
+            Rotation = this.ReadVector3Float();
             Scale = ReadUInt16();
             Flags = (MDDFFlags)ReadUInt16();
             Close();
@@ -41,12 +38,8 @@ namespace CoreADT.Chunks
                 {
                     writer.Write(MMIDEntry);
                     writer.Write(UniqueId);
-                    writer.Write(Position.X);
-                    writer.Write(Position.Y);
-                    writer.Write(Position.Z);
-                    writer.Write(Rotation.X);
-                    writer.Write(Rotation.Y);
-                    writer.Write(Rotation.Z);
+                    writer.WriteVector3Float(Position);
+                    writer.WriteVector3Float(Rotation);
                     writer.Write(Scale);
                     writer.Write((UInt16)Flags);
                 }

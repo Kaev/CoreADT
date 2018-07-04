@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreADT.Helper
+namespace CoreADT.Flags
 {
     [Flags]
     public enum MDDFFlags

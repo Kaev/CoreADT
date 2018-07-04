@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CoreADT.Flags;
 using CoreADT.Helper;
 
 namespace CoreADT.Chunks
@@ -72,9 +73,7 @@ namespace CoreADT.Chunks
             NumberSoundEmitters = ReadUInt32();
             OffsetMCLQ = ReadUInt32();
             SizeLiquid = ReadUInt32();
-            Position.X = ReadSingle();
-            Position.Y = ReadSingle();
-            Position.Z = ReadSingle();
+            Position = this.ReadVector3Float();
             OffsetMCCV = ReadUInt32();
             Unused1 = ReadUInt32();
             Unused2 = ReadUInt32();

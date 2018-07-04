@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using CoreADT.Helper;
+using CoreADT.Flags;
 
 namespace CoreADT.Chunks
 {

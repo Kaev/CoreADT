@@ -1,19 +1,25 @@
 ﻿using System.IO;
 using CoreADT.Flags;
 
-namespace CoreADT.Chunks
+namespace CoreADT.Chunks.Subchunks
 {
-    class MTXF : Chunk
+    public class MCLY : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint);
+        public override uint ChunkSize { get; set; }
 
-        public MTXFFlags Flags { get; set; }
+        public uint TextureId { get; set; }
+        public MCLYFlags Flags { get; set; }
+        public uint OffsetInMCAL { get; set; }
+        public uint EffectId { get; set; }
 
-        public MTXF(byte[] chunkBytes) : base(chunkBytes)
+
+        public MCLY(byte[] chunkBytes) : base(chunkBytes)
         {
-            Flags = (MTXFFlags)ReadUInt32();
-            Close();
+            TextureId = ReadUInt32();
+            Flags = (MCLYFlags)ReadUInt32();
+            OffsetInMCAL = ReadUInt32();
+            EffectId = ReadUInt32();
         }
 
         public override byte[] GetChunkBytes()
@@ -22,7 +28,10 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
+                    writer.Write(TextureId);
                     writer.Write((uint)Flags);
+                    writer.Write(OffsetInMCAL);
+                    writer.Write(EffectId);
                 }
                 return stream.ToArray();
             }
@@ -34,7 +43,7 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(new char[] { 'F', 'X', 'T', 'M' });
+                    writer.Write(new char[] { 'Y', 'L', 'C', 'M' });
                     writer.Write(ChunkSize);
                 }
                 return stream.ToArray();
