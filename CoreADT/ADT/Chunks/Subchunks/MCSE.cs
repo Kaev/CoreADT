@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 using CoreADT.Helper;
 
 namespace CoreADT.Chunks.Subchunks
@@ -20,6 +17,7 @@ namespace CoreADT.Chunks.Subchunks
             EntryId = new uint[parentChunk.NumberSoundEmitters];
             Position = new Vector3<float>[parentChunk.NumberSoundEmitters];
             Size = new Vector3<float>[parentChunk.NumberSoundEmitters];
+            Close();
         }
 
         public override byte[] GetChunkBytes()

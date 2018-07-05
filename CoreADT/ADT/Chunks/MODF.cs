@@ -72,7 +72,7 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(new char[] { 'D', 'I', 'W', 'M' });
+                    writer.Write(new char[] { 'F', 'D', 'O', 'M' });
                     writer.Write(ChunkSize);
                 }
                 return stream.ToArray();

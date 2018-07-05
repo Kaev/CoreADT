@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace CoreADT.Chunks.Subchunks
 {
@@ -21,6 +19,7 @@ namespace CoreADT.Chunks.Subchunks
             else
                 // Uncompressed (2048)
             */
+            Close();
         }
 
         public override uint ChunkSize { get; set; }

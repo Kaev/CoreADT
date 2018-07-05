@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CoreADT.Chunks
+namespace CoreADT
 {
     public abstract class Chunk : BinaryReader
     {

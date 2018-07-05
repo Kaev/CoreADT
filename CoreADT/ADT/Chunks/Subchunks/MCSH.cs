@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace CoreADT.Chunks.Subchunks
 {
@@ -20,6 +17,7 @@ namespace CoreADT.Chunks.Subchunks
             for (int i = 0; i < 64; i++)
                 for (int j = 0; j < 8; j++)
                     ShadowMap[i, j] = ReadByte();
+            Close();
         }
 
         public override byte[] GetChunkBytes()

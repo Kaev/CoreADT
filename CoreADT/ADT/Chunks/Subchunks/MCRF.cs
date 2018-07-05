@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace CoreADT.Chunks.Subchunks
 {
@@ -22,6 +19,7 @@ namespace CoreADT.Chunks.Subchunks
                 DoodadReferences[i] = ReadUInt32();
             for (int i = 0; i < ObjectReferences.Length; i++)
                 ObjectReferences[i] = ReadUInt32();
+            Close();
         }
 
         public override byte[] GetChunkBytes()
