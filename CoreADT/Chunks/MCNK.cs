@@ -45,6 +45,11 @@ namespace CoreADT.Chunks
         public uint Unused2 { get; set; }
 
 
+        // MCCV[145]
+        // MCLY[4]
+
+
+
         public MCNK(byte[] chunkBytes) : base(chunkBytes)
         {
             Flags = (MCNKFlags)ReadUInt32();
@@ -104,7 +109,7 @@ namespace CoreADT.Chunks
 
             }
 
-            if (OffsetMCSH > 0 && SizeShadow > 8)
+            if (OffsetMCSH > 0 && SizeShadow > 8 && Flags.HasFlag(MCNKFlags.HasMCSH))
             {
 
             }
