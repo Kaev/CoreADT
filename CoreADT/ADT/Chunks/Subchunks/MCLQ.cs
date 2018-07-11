@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
 using CoreADT.Helper;
-using CoreADT.MCLQVertexTypes;
+using CoreADT.ADT.MCLQVertexTypes;
 
-namespace CoreADT.Chunks.Subchunks
+namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCLQ : Chunk
     {

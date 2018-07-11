@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
 using CoreADT.Helper;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
     public class MCNK : Chunk
     {

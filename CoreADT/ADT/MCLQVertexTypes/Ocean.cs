@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CoreADT.MCLQVertexTypes
+namespace CoreADT.ADT.MCLQVertexTypes
 {
     public class Ocean : VertexType
     {

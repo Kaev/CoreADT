@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using CoreADT.Helper;
 
-namespace CoreADT.Chunks.Subchunks
+namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCSE : Chunk
     {

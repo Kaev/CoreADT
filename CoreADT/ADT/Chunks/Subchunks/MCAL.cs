@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace CoreADT.Chunks.Subchunks
+namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCAL : Chunk
     {

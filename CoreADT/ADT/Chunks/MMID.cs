@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
-    class MMID : Chunk
+    public class MMID : Chunk
     {
-
         public override uint ChunkSize
         {
             get => (uint) (sizeof(uint) * Offsets.Count);
-            set => ChunkSize = value;
         }
 
         public List<uint> Offsets { get; set; } = new List<uint>();

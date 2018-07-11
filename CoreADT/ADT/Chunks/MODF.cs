@@ -1,47 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
+using CoreADT.ADT.MapObjects;
 using CoreADT.Helper;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
     public class MODF : Chunk
     {
 
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => MapObjectDefinition.Size * (uint)MapObjectDefinitions.Count;
 
-        public uint MWIDEntry { get; set; }
-        public uint UniqueId { get; set; }
-        public Vector3<float> Position { get; set; }
-        public Vector3<float> Rotation { get; set; }
-        /// <summary>
-        /// Position + Bounding Box
-        /// </summary>
-        public Vector3<float> LowerBounds { get; set; }
-        /// <summary>
-        /// Position + Bounding Box
-        /// </summary>
-        public Vector3<float> UpperBounds { get; set; }
-        public MODFFlags Flags { get; set; }
-        public UInt16 DoodadSet { get; set; }
-        /// <summary>
-        /// Used for renaming
-        /// </summary>
-        public UInt16 NameSet { get; set; }
-        public UInt16 Padding { get; set; }
+        public List<MapObjectDefinition> MapObjectDefinitions { get; set; } = new List<MapObjectDefinition>();
 
         public MODF(byte[] chunkBytes) : base(chunkBytes)
         {
-            MWIDEntry = ReadUInt32();
-            UniqueId = ReadUInt32();
-            Position = this.ReadVector3Float();
-            Rotation = this.ReadVector3Float();
-            LowerBounds = this.ReadVector3Float();
-            UpperBounds = this.ReadVector3Float();
-            Flags = (MODFFlags) ReadUInt16();
-            DoodadSet = ReadUInt16();
-            NameSet = ReadUInt16();
-            Padding = ReadUInt16();
+            for (int i = 0; i < chunkBytes.Length / 64; i++)
+                MapObjectDefinitions.Add(new MapObjectDefinition(this));
             Close();
         }
 
@@ -51,16 +27,8 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(MWIDEntry);
-                    writer.Write(UniqueId);
-                    writer.WriteVector3Float(Position);
-                    writer.WriteVector3Float(Rotation);
-                    writer.WriteVector3Float(LowerBounds);
-                    writer.WriteVector3Float(UpperBounds);
-                    writer.Write((UInt16)Flags);
-                    writer.Write(DoodadSet);
-                    writer.Write(NameSet);
-                    writer.Write(Padding);
+                    foreach (var definition in MapObjectDefinitions)
+                        definition.Write(writer);
                 }
                 return stream.ToArray();
             }

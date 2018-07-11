@@ -5,7 +5,7 @@ namespace CoreADT
     public abstract class Chunk : BinaryReader
     {
 
-        public abstract uint ChunkSize { get; set; }
+        public abstract uint ChunkSize { get; }
 
         public Chunk(byte[] chunkBytes) : base(new MemoryStream(chunkBytes))
         {

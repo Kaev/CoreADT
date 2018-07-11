@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
 
-namespace CoreADT.Chunks.Subchunks
+namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCLY : Chunk
     {

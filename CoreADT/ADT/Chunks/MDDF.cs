@@ -1,32 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Doodads;
+using CoreADT.ADT.Flags;
 using CoreADT.Helper;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
     public class MDDF : Chunk
     {
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => DoodadDefinition.Size * (uint)DoodadDefinitions.Count;
 
-        public uint MMIDEntry { get; set; }
-        public uint UniqueId { get; set; }
-        public Vector3<float> Position { get; set; }
-        public Vector3<float> Rotation { get; set; }
-        /// <summary>
-        /// 1024 = 1.0f
-        /// </summary>
-        public UInt16 Scale { get; set; }
-        public MDDFFlags Flags { get; set; }
+        public List<DoodadDefinition> DoodadDefinitions { get; set; } = new List<DoodadDefinition>();
 
         public MDDF(byte[] chunkBytes) : base(chunkBytes)
         {
-            MMIDEntry = ReadUInt32();
-            UniqueId = ReadUInt32();
-            Position = this.ReadVector3Float();
-            Rotation = this.ReadVector3Float();
-            Scale = ReadUInt16();
-            Flags = (MDDFFlags)ReadUInt16();
+            for (int i = 0; i < chunkBytes.Length / 36; i++)
+                DoodadDefinitions.Add(new DoodadDefinition(this));
             Close();
         }
 
@@ -36,12 +26,8 @@ namespace CoreADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(MMIDEntry);
-                    writer.Write(UniqueId);
-                    writer.WriteVector3Float(Position);
-                    writer.WriteVector3Float(Rotation);
-                    writer.Write(Scale);
-                    writer.Write((UInt16)Flags);
+                    foreach (var definition in DoodadDefinitions)
+                        definition.Write(writer);
                 }
                 return stream.ToArray();
             }

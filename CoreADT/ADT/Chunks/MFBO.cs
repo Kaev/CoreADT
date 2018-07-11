@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
-    class MFBO : Chunk
+    public class MFBO : Chunk
     {
 
         public override uint ChunkSize { get; set; } = sizeof(uint) * 18;

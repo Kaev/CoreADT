@@ -1,12 +1,12 @@
 ﻿using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
     public class MHDR : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint) * 15;
+        public override uint ChunkSize { get; } = sizeof(uint) * 15;
 
         public MHDRFlags Flags { get; set; }
         public uint OffsetMCIN { get; set; }

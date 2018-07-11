@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreADT.Flags
+namespace CoreADT.ADT.Flags
 {
     [Flags]
     public enum MODFFlags

@@ -6,7 +6,7 @@ namespace CoreADT.WDT.Chunks
     public class MAIN : Chunk
     {
 
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize { get; set; } = sizeof(uint) * 2;
 
         private uint _Flags { get; set; }
 

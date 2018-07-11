@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using CoreADT.Flags;
+using CoreADT.ADT.Flags;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
-    class MTXF : Chunk
+    public class MTXF : Chunk
     {
 
         public override uint ChunkSize { get; set; } = sizeof(uint);

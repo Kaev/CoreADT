@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
-using CoreADT.Chunks;
+using CoreADT.ADT.Chunks;
+using CoreADT.ADT.Flags;
 
-namespace CoreADT
+namespace CoreADT.ADT
 {
-    class ADT
+    public class ADT
     {
         // MODF = chunkBytes.Length / 64 Chunks
         // MDDF = chunkBytes.Length / 36 Chunks
@@ -23,8 +24,8 @@ namespace CoreADT
         public MMID MMID { get; set; }
         public MWMO MWMO { get; set; }
         public MWID MWID { get; set; }
-        public MDDF[] MDDF { get; set; }
-        public MODF[] MODF { get; set; }
+        public MDDF MDDF { get; set; }
+        public MODF MODF { get; set; }
         public MH2O[] MH2O { get; set; } = new MH2O[255];
         public MCNK[] MCNK { get; set; } = new MCNK[255];
         public MFBO MFBO { get; set; }
@@ -100,22 +101,14 @@ namespace CoreADT
                 writer.Write(MWID.GetChunkBytes());
 
                 // MDDF
-                var mddfSize = sizeof(uint) * 2 + sizeof(float) * 6 + sizeof(UInt16) * 2 * (uint)MDDF.Length;
-                foreach (var chunk in MDDF)
-                    chunk.ChunkSize = mddfSize;
                 MHDR.OffsetMDDF = (uint)writer.BaseStream.Position;
-                writer.Write(MDDF[0].GetChunkHeaderBytes());
-                for (int i = 0; i < mddfSize / 36; i++)
-                    writer.Write(MDDF[i].GetChunkBytes());
+                writer.Write(MDDF.GetChunkHeaderBytes());
+                writer.Write(MDDF.GetChunkBytes());
                 
                 // MODF
-                var modfSize = sizeof(uint) * 2 + sizeof(float) * 12 + sizeof(UInt16) * 4 * (uint) MODF.Length;
-                foreach (var chunk in MODF)
-                    chunk.ChunkSize = modfSize;
                 MHDR.OffsetMODF = (uint)writer.BaseStream.Position;
-                writer.Write(MODF[0].GetChunkHeaderBytes());
-                for (int i = 0; i < MODF[0].GetChunkBytes().Length * MODF.Length / 64; i++)
-                    writer.Write(MODF[i].GetChunkBytes());
+                writer.Write(MODF.GetChunkHeaderBytes());
+                writer.Write(MODF.GetChunkBytes());
 
                 // MH2O
                 var positionBeforeMH2OChunk = writer.BaseStream.Position;

@@ -2,11 +2,10 @@
 using System.IO;
 using CoreADT.Helper;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
     public class MTEX : Chunk
     {
-
         public override uint ChunkSize
         {
             get
@@ -16,7 +15,6 @@ namespace CoreADT.Chunks
                 Filenames.ForEach(f => size += (uint)f.Length + 1);
                 return size;
             }
-            set => ChunkSize = value;
         }
 
         public List<string> Filenames { get; set; } = new List<string>();

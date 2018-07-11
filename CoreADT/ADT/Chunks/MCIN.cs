@@ -1,11 +1,11 @@
 ﻿using System.IO;
 
-namespace CoreADT.Chunks
+namespace CoreADT.ADT.Chunks
 {
-    class MCIN : Chunk
+    public class MCIN : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint) * 4 * 256;
+        public override uint ChunkSize { get; } = sizeof(uint) * 4 * 256;
 
         public uint OffsetMCNK { get; set; }
         public uint Size { get; set; }
