@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace CoreADT.ADT.MH2OData
 {
     public class MH2OInstance
     {
+
+        internal long OffsetExistsBitmapPosition { get; set; }
+        internal long OffsetVertexDataPosition { get; set; }
 
         public static uint Size => sizeof(UInt16) * 2 + sizeof(float) * 2 + sizeof(byte) * 4 + sizeof(uint) * 2;
 
@@ -20,6 +21,8 @@ namespace CoreADT.ADT.MH2OData
         public byte Height { get; set; }
         public uint OffsetExistsBitmap { get; set; }
         public uint OffsetVertexData { get; set; }
+        public byte[] RenderBitmapBytes { get; set; }
+        public MH2OInstanceVertexData VertexData { get; set; }
 
         public MH2OInstance() { }
 
@@ -35,20 +38,43 @@ namespace CoreADT.ADT.MH2OData
             Height = reader.ReadByte();
             OffsetExistsBitmap = reader.ReadUInt32();
             OffsetVertexData = reader.ReadUInt32();
+
+            long positionAfterInstance = reader.BaseStream.Position;
+
+            if (OffsetExistsBitmap > 0)
+            {
+                reader.BaseStream.Position = OffsetExistsBitmap;
+                RenderBitmapBytes = reader.ReadBytes((Width * Height + 7) / 8);
+            }
+
+            if (OffsetVertexData > 0)
+            {
+                reader.BaseStream.Position = OffsetVertexData;
+                VertexData = new MH2OInstanceVertexData(reader, this);
+            }
+
+            reader.BaseStream.Position = positionAfterInstance;
         }
 
         public void Write(BinaryWriter writer)
         {
             writer.Write(LiquidTypeId);
-            writer.Write(LiquidVertexFormat);
+            if (OffsetVertexData == 0 && LiquidTypeId != 2)
+                writer.Write(2);
+            else
+                writer.Write(LiquidVertexFormat);
             writer.Write(MinHeightLevel);
             writer.Write(MaxHeightLevel);
             writer.Write(OffsetX);
             writer.Write(OffsetY);
             writer.Write(Width);
             writer.Write(Height);
-            writer.Write(OffsetExistsBitmap);
-            writer.Write(OffsetVertexData);
+            // We will write the Offset later in MH2O.Write
+            OffsetExistsBitmapPosition = writer.BaseStream.Position;
+            writer.Write(0);
+            // We will write the Offset later in MH2O.Write
+            OffsetVertexDataPosition = writer.BaseStream.Position;
+            writer.Write(0);
         }
     }
 }

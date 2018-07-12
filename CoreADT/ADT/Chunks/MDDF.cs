@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using CoreADT.ADT.Doodads;
-using CoreADT.ADT.Flags;
-using CoreADT.Helper;
 
 namespace CoreADT.ADT.Chunks
 {
