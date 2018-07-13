@@ -59,10 +59,11 @@ namespace CoreADT.ADT.MH2OData
         public void Write(BinaryWriter writer)
         {
             writer.Write(LiquidTypeId);
-            if (OffsetVertexData == 0 && LiquidTypeId != 2)
+            // Write 2 vertex data can be ommitted - TODO: When can we omit this?
+            /*if (OffsetVertexData == 0 && LiquidTypeId != 2)
                 writer.Write(2);
-            else
-                writer.Write(LiquidVertexFormat);
+            else*/
+            writer.Write(LiquidVertexFormat);
             writer.Write(MinHeightLevel);
             writer.Write(MaxHeightLevel);
             writer.Write(OffsetX);

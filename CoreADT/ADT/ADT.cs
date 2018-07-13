@@ -25,7 +25,7 @@ namespace CoreADT.ADT
         public MWID MWID { get; set; }
         public MDDF MDDF { get; set; }
         public MODF MODF { get; set; }
-        public MH2O[] MH2O { get; set; } = new MH2O[255];
+        public MH2O MH2O { get; set; }
         public MCNK[] MCNK { get; set; } = new MCNK[255];
         public MFBO MFBO { get; set; }
         public MTXF MTXF { get; set; }
@@ -44,10 +44,7 @@ namespace CoreADT.ADT
             {
                 case "MH2O":
                     var MH2OChunkbytes = reader.ReadBytes(chunkSize);
-                    for (int i = 0; i < 256; i++)
-                    {
-                        MH2O[i] = new MH2O(MH2OChunkbytes, i * MH2OHeaderDataSize);
-                    }
+
                     
                     break;
                 case "":
@@ -110,48 +107,9 @@ namespace CoreADT.ADT
                 writer.Write(MODF.GetChunkBytes());
 
                 // MH2O
-                var positionBeforeMH2OChunk = writer.BaseStream.Position;
-                MHDR.OffsetMH2O = (uint)positionBeforeMH2OChunk;
-
-                // Skip MH2OHeaderData and chunk header for now, because we only know the Offset after we wrote it
-                writer.BaseStream.Position +=  MH2OHeaderDataSize * 256 + HeaderSize;
-
-                for (int i = 0; i < 256; i++)
-                {
-                    if (MH2O[i].LayerCount > 0)
-                    {
-                        MH2O[i].OffsetExistsBitmap = (uint)(writer.BaseStream.Position - positionBeforeMH2OChunk);
-                        writer.Write(MH2O[i].GetMH2ORenderMaskBytes());
-
-                        if (MH2O[i].LiquidVertexFormat != 2)
-                        {
-                            MH2O[i].OffsetVertexData = (uint)(writer.BaseStream.Position - positionBeforeMH2OChunk);
-                            writer.Write(MH2O[i].GetMH2OHeightMapDataBytes());
-                        }
-                        else
-                            MH2O[i].OffsetVertexData = 0;
-
-                        MH2O[i].OffsetExistsBitmap = (uint)(writer.BaseStream.Position - positionBeforeMH2OChunk);
-                        writer.Write(MH2O[i].RenderBitmapBytes);
-
-                        MH2O[i].OffsetInstances = (uint)(writer.BaseStream.Position - positionBeforeMH2OChunk);
-                        writer.Write(MH2O[i].GetMH2OInstanceBytes());
-
-                    }
-                }
-
-                var positionAfterMH2OChunk = writer.BaseStream.Position;
-                for (int i = 0; i < 256; i++)
-                    MH2O[i].ChunkSize = (uint)(positionAfterMH2OChunk - positionBeforeMH2OChunk);
-
-                // Write MH2OHeaderData and chunk header now
-                writer.BaseStream.Position = positionBeforeMH2OChunk;
-                writer.Write(MH2O[0].GetChunkHeaderBytes());
-                for (int i = 0; i < 256; i++)
-                    writer.Write(MH2O[i].GetMH2OHeaderDataBytes());
-
-                // Set position after MH2O chunk so we don't overwrite any MH2O data
-                writer.BaseStream.Position = positionAfterMH2OChunk;
+                MHDR.OffsetMH2O = (uint) writer.BaseStream.Position;
+                writer.Write(MH2O.GetChunkHeaderBytes());
+                writer.Write(MH2O.GetChunkBytes());
 
                 // MCNK
 
