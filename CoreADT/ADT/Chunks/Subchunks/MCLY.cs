@@ -1,25 +1,20 @@
 ﻿using System.IO;
-using CoreADT.ADT.Flags;
+using CoreADT.ADT.MCLYData;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCLY : Chunk
     {
+        public override uint ChunkSize => MCLYLayer.Size * (uint)GetChunkBytes().Length / 16;
 
-        public override uint ChunkSize { get; set; }
-
-        public uint TextureId { get; set; }
-        public MCLYFlags Flags { get; set; }
-        public uint OffsetInMCAL { get; set; }
-        public uint EffectId { get; set; }
-
+        public MCLYLayer[] Layers { get; set; }
 
         public MCLY(byte[] chunkBytes) : base(chunkBytes)
         {
-            TextureId = ReadUInt32();
-            Flags = (MCLYFlags)ReadUInt32();
-            OffsetInMCAL = ReadUInt32();
-            EffectId = ReadUInt32();
+            var layerCount = chunkBytes.Length / 16;
+            Layers = new MCLYLayer[layerCount];
+            for (int i = 0; i < layerCount; i++)
+                Layers[i] = new MCLYLayer(this);
         }
 
         public override byte[] GetChunkBytes()
@@ -28,10 +23,8 @@ namespace CoreADT.ADT.Chunks.Subchunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(TextureId);
-                    writer.Write((uint)Flags);
-                    writer.Write(OffsetInMCAL);
-                    writer.Write(EffectId);
+                    for (int i = 0; i < Layers.Length; i++)
+                        Layers[i].Write(writer);
                 }
                 return stream.ToArray();
             }

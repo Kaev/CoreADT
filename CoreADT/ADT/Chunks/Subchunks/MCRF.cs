@@ -5,7 +5,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
     public class MCRF : Chunk
     {
 
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => sizeof(uint) * (uint)DoodadReferences.Length + sizeof(uint) * (uint)ObjectReferences.Length;
 
         public uint[] DoodadReferences { get; set; }
         public uint[] ObjectReferences { get; set; }
@@ -39,7 +39,6 @@ namespace CoreADT.ADT.Chunks.Subchunks
 
         public override byte[] GetChunkHeaderBytes()
         {
-            ChunkSize = sizeof(uint) * (uint)DoodadReferences.Length + sizeof(uint) * (uint)ObjectReferences.Length;
             using (var stream = new MemoryStream())
             {
                 using (var writer = new BinaryWriter(stream))

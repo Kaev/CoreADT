@@ -5,7 +5,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
     public class MCSH : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(byte) * 64 * 8;
+        public override uint ChunkSize => sizeof(byte) * 64 * 8;
 
         /// <summary>
         /// You need to read every _bit_ of these bytes for the entire ShadowMap

@@ -1,29 +1,19 @@
 ﻿using System.IO;
+using CoreADT.ADT.MCINData;
 
 namespace CoreADT.ADT.Chunks
 {
     public class MCIN : Chunk
     {
 
-        public override uint ChunkSize { get; } = sizeof(uint) * 4 * 256;
+        public override uint ChunkSize { get; } = MCINEntry.Size * 256;
 
-        public uint OffsetMCNK { get; set; }
-        public uint Size { get; set; }
-        /// <summary>
-        /// Always 0, only set in the client
-        /// </summary>
-        public uint Flags { get; set; } = 0;
-        /// <summary>
-        /// Always 0, only set in the client
-        /// </summary>
-        public uint AsyncId { get; set; } = 0;
+        public MCINEntry[] Entries { get; set; } = new MCINEntry[256];
 
         public MCIN(byte[] chunkBytes) : base(chunkBytes)
         {
-            OffsetMCNK = ReadUInt32();
-            Size = ReadUInt32();
-            Flags = ReadUInt32();
-            AsyncId = ReadUInt32();
+            for (int i = 0; i < 256; i++)
+                Entries[i] = new MCINEntry(this);
             Close();
         }
 
@@ -33,10 +23,8 @@ namespace CoreADT.ADT.Chunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(OffsetMCNK);
-                    writer.Write(Size);
-                    writer.Write(Flags);
-                    writer.Write(AsyncId);
+                    for (int i = 0; i < 256; i++)
+                        Entries[i].Write(writer);
                 }
                 return stream.ToArray();
             }

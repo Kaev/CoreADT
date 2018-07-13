@@ -1,9 +1,13 @@
 ﻿using System.IO;
+using CoreADT.Helper;
 
-namespace CoreADT.Helper
+namespace CoreADT.MCLQData
 {
-    public class Flowvs
+    public class Flowv
     {
+
+        public static uint Size => sizeof(float) * 10;
+
         public Vector3<float> Position { get; set; }
         public float Radius { get; set; }
         public Vector3<float> Direction { get; set; }
@@ -30,6 +34,5 @@ namespace CoreADT.Helper
             writer.Write(Amplitude);
             writer.Write(Frequency);
         }
-
     }
 }

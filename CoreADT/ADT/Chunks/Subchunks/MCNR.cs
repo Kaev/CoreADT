@@ -1,21 +1,22 @@
 ﻿using System.IO;
+using CoreADT.ADT.MCNRData;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCNR : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(byte) * 145 * 3 + sizeof(byte) * 13;
+        public override uint ChunkSize { get; } = MCNREntry.Size * 145 + sizeof(byte) * 13;
 
-        public Vector3<byte>[] Normal { get; set; } = new Vector3<byte>[145];
+        public MCNREntry[] Entries = new MCNREntry[145];
         public byte[] Padding { get; set; } = new byte[13];
+
 
         public MCNR(byte[] chunkBytes) : base(chunkBytes)
         {
-            for (int i = 0; i < 146; i++)
-                Normal[i] = this.ReadVector3ByteYZSwapped();
-            for (int i = 0; i < 14; i++)
-                Padding[i] = ReadByte();
+            for (int i = 0; i < 145; i++)
+                Entries[i] = new MCNREntry(this);
+            Padding = ReadBytes(13);
         }
 
         public override byte[] GetChunkBytes()
@@ -24,10 +25,9 @@ namespace CoreADT.ADT.Chunks.Subchunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    for (int i = 0; i < 146; i++)
-                        writer.WriteVector3Byte(Normal[i]);
-                    for (int i = 0; i < 14; i++)
-                        writer.Write(Padding[i]);
+                    for (int i = 0; i < 145; i++)
+                        Entries[i].Write(writer);
+                    writer.Write(Padding);
                 }
                 return stream.ToArray();
             }

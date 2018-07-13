@@ -4,6 +4,8 @@ namespace CoreADT.ADT.MCLQVertexTypes
 {
     public class Water : VertexType
     {
+        public override uint Size => sizeof(byte) * 4 + sizeof(float);
+
         public byte Depth { get; set; }
         public byte Flow0Pct { get; set; }
         public byte Flow1Pct { get; set; }

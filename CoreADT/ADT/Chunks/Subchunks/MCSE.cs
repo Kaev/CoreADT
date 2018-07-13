@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CoreADT.ADT.MCSEData;
 using CoreADT.Helper;
 
 namespace CoreADT.ADT.Chunks.Subchunks
@@ -6,17 +7,14 @@ namespace CoreADT.ADT.Chunks.Subchunks
     public class MCSE : Chunk
     {
 
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => SoundEmitter.Size * (uint)SoundEmitters.Length;
 
-        public uint[] EntryId { get; set; }
-        public Vector3<float>[] Position { get; set; }
-        public Vector3<float>[] Size { get; set; }
+        public SoundEmitter[] SoundEmitters { get; set; }
 
         public MCSE(byte[] chunkBytes, MCNK parentChunk) : base(chunkBytes)
         {
-            EntryId = new uint[parentChunk.NumberSoundEmitters];
-            Position = new Vector3<float>[parentChunk.NumberSoundEmitters];
-            Size = new Vector3<float>[parentChunk.NumberSoundEmitters];
+            for (int i = 0; i < parentChunk.NumberSoundEmitters; i++)
+                SoundEmitters[i] = new SoundEmitter(this);
             Close();
         }
 
@@ -26,12 +24,8 @@ namespace CoreADT.ADT.Chunks.Subchunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    for (int i = 0; i < EntryId.Length; i++)
-                    {
-                        writer.Write(EntryId[i]);
-                        writer.WriteVector3Float(Position[i]);
-                        writer.WriteVector3Float(Size[i]);
-                    }
+                    for (int i = 0; i < SoundEmitters.Length; i++)
+                        SoundEmitters[i].Write(writer);
                 }
                 return stream.ToArray();
             }

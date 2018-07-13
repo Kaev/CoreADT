@@ -5,6 +5,8 @@ namespace CoreADT.ADT.MCLQVertexTypes
 {
     public class Magma : VertexType
     {
+        public override uint Size => sizeof(UInt16) * 2 + sizeof(float);
+
         public UInt16 S { get; set; }
         public UInt16 T { get; set; }
         public float Height { get; set; }

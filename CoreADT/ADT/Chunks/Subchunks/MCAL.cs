@@ -1,31 +1,44 @@
 ﻿using System;
 using System.IO;
+using CoreADT.ADT.Flags;
+using CoreADT.ADT.MCALData;
+using CoreADT.WDT;
+using CoreADT.WDT.Flags;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCAL : Chunk
     {
 
-        public byte[,] AlphaMap { get; set; }
+        public override uint ChunkSize { get; }
 
-        public MCAL(byte[] chunkBytes, MCNK parentChunk) : base(chunkBytes)
+        public MCALAlphaMap[] AlphaMaps { get; set; }
+
+        public MCAL(byte[] chunkBytes, MCNK parentChunk, WDT wdt = null) : base(chunkBytes)
         {
-            /*if (parentChunk.MCLY.Flags.HasFlag(CompressedAlphaMap) &&
-            WDT.MPHD.Flags.HasFlag(0x4) || WDT.MPHD.Flags.HasFlag(0x80))
-                // Compressed
-
-            else if(WDT.MPHD.Flags.HasFlag(0x4) || WDT.MPHD.Flags.HasFlag(0x80))
-                // Uncompressed (4096)
-            else
-                // Uncompressed (2048)
-            */
+            AlphaMaps = new MCALAlphaMap[parentChunk.MCLY.Layers.Length];
+            for (int i = 0; i < parentChunk.MCLY.Layers.Length; i++)
+                AlphaMaps[i] = new MCALAlphaMap(this, parentChunk, wdt, i);
             Close();
         }
 
-        public override uint ChunkSize { get; set; }
+
         public override byte[] GetChunkBytes()
         {
             throw new NotImplementedException();
+        }
+
+        public byte[] GetChunkBytes(MCNK parentChunk, WDT wdt)
+        {
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    for (int i = 0; i < AlphaMaps.Length; i++)
+                        AlphaMaps[i].Write(writer, parentChunk, wdt, i);
+                }
+                return stream.ToArray();
+            }
         }
 
         public override byte[] GetChunkHeaderBytes()

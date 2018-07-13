@@ -6,7 +6,7 @@ namespace CoreADT.ADT.Chunks
     public class MFBO : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint) * 18;
+        public override uint ChunkSize { get; } = sizeof(uint) * 18;
 
         public Int16[,] Maximum { get; set; } = new Int16[2, 2];
         public Int16[,] Minimum { get; set; } = new Int16[2, 2];

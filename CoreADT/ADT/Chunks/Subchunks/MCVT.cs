@@ -5,13 +5,13 @@ namespace CoreADT.ADT.Chunks.Subchunks
     public class MCVT : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(float) * 145;
+        public override uint ChunkSize { get; } = sizeof(float) * 145;
 
         public float[] Height { get; set; } = new float[145];
 
         public MCVT(byte[] chunkBytes) : base(chunkBytes)
         {
-            for (int i = 0; i < 146; i++)
+            for (int i = 0; i < 145; i++)
                 Height[i] = ReadSingle();
         }
 
@@ -21,7 +21,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    for (int i = 0; i < 146; i++)
+                    for (int i = 0; i < 145; i++)
                         writer.Write(Height[i]);
                 }
                 return stream.ToArray();

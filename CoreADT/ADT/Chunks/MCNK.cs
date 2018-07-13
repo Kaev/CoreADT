@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CoreADT.ADT.Chunks.Subchunks;
 using CoreADT.ADT.Flags;
 using CoreADT.Helper;
 
@@ -7,7 +8,8 @@ namespace CoreADT.ADT.Chunks
 {
     public class MCNK : Chunk
     {
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => sizeof(uint) * 23 + sizeof(UInt16) * 2 + sizeof(byte) +
+                                          (uint) ReallyLowQualityTextureingMap.Length + sizeof(float) * 3;
 
         public MCNKFlags Flags { get; set; }
         public Vector2<uint> Index { get; set; }
@@ -44,11 +46,18 @@ namespace CoreADT.ADT.Chunks
         public uint Unused1 { get; set; }
         public uint Unused2 { get; set; }
 
+        #region Sub-chunks
 
-        // MCCV[145]
-        // MCLY[4]
-
-
+        public MCVT MCVT { get; set; }
+        public MCCV MCCV { get; set; }
+        public MCNR MCNR { get; set; }
+        public MCLY MCLY { get; set; }
+        public MCRF MCRF { get; set; }
+        public MCSH MCSH { get; set; }
+        public MCAL MCAL { get; set; }
+        public MCLQ MCLQ { get; set; }
+        public MCSE MCSE { get; set; }
+        #endregion
 
         public MCNK(byte[] chunkBytes) : base(chunkBytes)
         {

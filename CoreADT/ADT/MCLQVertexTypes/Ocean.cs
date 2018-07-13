@@ -4,6 +4,8 @@ namespace CoreADT.ADT.MCLQVertexTypes
 {
     public class Ocean : VertexType
     {
+        public override uint Size => sizeof(byte) * 4;
+
         public byte Depth { get; set; }
         public byte Foam { get; set; }
         public byte Wet { get; set; }

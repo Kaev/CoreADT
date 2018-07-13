@@ -1,14 +1,14 @@
 ﻿using System.IO;
 using CoreADT.ADT.Flags;
-using CoreADT.Helper;
 using CoreADT.ADT.MCLQVertexTypes;
+using CoreADT.MCLQData;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCLQ : Chunk
     {
 
-        public override uint ChunkSize { get; set; }
+        public override uint ChunkSize => sizeof(float) * 2 + Vertices[0].Size * 81 + sizeof(byte) * 8 * 8 + sizeof(uint) + Flowv.Size * 2;
 
         public float MinHeight { get; set; }
         public float MaxHeight { get; set; }
@@ -21,7 +21,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
         /// <summary>
         /// Always 2 in file, indepent on nFlowvs
         /// </summary>
-        public Flowvs[] Flowvs { get; set; } = new Flowvs[2];
+        public Flowv[] Flowvs { get; set; } = new Flowv[2];
 
         public MCLQ(byte[] chunkBytes, MCNK parentChunk) : base(chunkBytes)
         {

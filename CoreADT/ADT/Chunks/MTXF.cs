@@ -6,7 +6,7 @@ namespace CoreADT.ADT.Chunks
     public class MTXF : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint);
+        public override uint ChunkSize { get; } = sizeof(uint);
 
         public MTXFFlags Flags { get; set; }
 

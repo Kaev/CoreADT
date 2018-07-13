@@ -1,23 +1,19 @@
 ﻿using System.IO;
+using CoreADT.ADT.MCCVData;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
     public class MCCV : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(byte) * 4 * 145;
+        public override uint ChunkSize { get; } = MCCVEntry.Size * 145;
 
-        public byte Red { get; set; }
-        public byte Green { get; set; }
-        public byte Blue { get; set; }
-        public byte Alpha { get; set; }
+        public MCCVEntry[] Entries { get; set; } = new MCCVEntry[145];
 
         public MCCV(byte[] chunkBytes) : base(chunkBytes)
         {
-            Red = ReadByte();
-            Green = ReadByte();
-            Blue = ReadByte();
-            Alpha = ReadByte();
+            for (int i = 0; i < 145; i++)
+                Entries[i] = new MCCVEntry(this);
         }
 
         
@@ -27,10 +23,8 @@ namespace CoreADT.ADT.Chunks.Subchunks
             {
                 using (var writer = new BinaryWriter(stream))
                 {
-                    writer.Write(Red);
-                    writer.Write(Green);
-                    writer.Write(Blue);
-                    writer.Write(Alpha);
+                    for (int i = 0; i < 145; i++)
+                        Entries[i].Write(writer);
                 }
                 return stream.ToArray();
             }

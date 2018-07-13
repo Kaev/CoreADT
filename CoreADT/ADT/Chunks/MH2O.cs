@@ -9,8 +9,8 @@ namespace CoreADT.ADT.Chunks
         {
             get
             {
-                uint size = MH2OHeader.Size * 255;
-                for (int i = 0; i < 255; i++)
+                uint size = MH2OHeader.Size * 256;
+                for (int i = 0; i < 256; i++)
                 {
                     if (Headers[i].LayerCount > 0)
                         size += MH2OAttribute.Size;
@@ -29,11 +29,11 @@ namespace CoreADT.ADT.Chunks
                 return size;
             }
         }
-        public MH2OHeader[] Headers { get; set; } = new MH2OHeader[255];
+        public MH2OHeader[] Headers { get; set; } = new MH2OHeader[256];
 
         public MH2O(byte[] chunkBytes) : base(chunkBytes)
         {
-            for (int i = 0; i < 255; i++)
+            for (int i = 0; i < 256; i++)
                 Headers[i] = new MH2OHeader(this);
             Close();
         }
@@ -45,11 +45,11 @@ namespace CoreADT.ADT.Chunks
                 using (var writer = new BinaryWriter(stream))
                 {
                     // Write header data
-                    for (int i = 0; i < 255; i++)
+                    for (int i = 0; i < 256; i++)
                         Headers[i].Write(writer);
 
                     // Write instance data
-                    for (int i = 0; i < 255; i++)
+                    for (int i = 0; i < 256; i++)
                     {
                         // We already wrote 0 for the offsets so we don't need to write anything here if LayerCount == 0
                         if (Headers[i].LayerCount > 0)
@@ -65,7 +65,7 @@ namespace CoreADT.ADT.Chunks
                     }
 
                     // Write referenced data
-                    for (int i = 0; i < 255; i++)
+                    for (int i = 0; i < 256; i++)
                     {
                         // We already wrote 0 for the offsets so we don't need to write anything here if LayerCount == 0
                         if (Headers[i].LayerCount > 0)

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using CoreADT.ADT.Chunks;
 using CoreADT.ADT.Flags;
 
@@ -6,18 +8,12 @@ namespace CoreADT.ADT
 {
     public class ADT
     {
-        // MODF = chunkBytes.Length / 64 Chunks
-        // MDDF = chunkBytes.Length / 36 Chunks
-        // MH2O = 256 MH2OHeader und daraufhin 256 Chunks
-        // MCIN = 256 Chunks
 
-        public static uint HeaderSize => sizeof(byte) * 4 + sizeof(uint);
-        public static uint MH2OHeaderDataSize => sizeof(uint) * 3;
+        private static uint _HeaderSize => sizeof(byte) * 4 + sizeof(uint);
         
         public MVER MVER { get; set; }
         public MHDR MHDR { get; set; }
-        public MCIN[] MCIN { get; set; } = new MCIN[255];
-
+        public MCIN MCIN { get; set; }
         public MTEX MTEX { get; set; }
         public MMDX MMDX { get; set; }
         public MMID MMID { get; set; }
@@ -26,34 +22,34 @@ namespace CoreADT.ADT
         public MDDF MDDF { get; set; }
         public MODF MODF { get; set; }
         public MH2O MH2O { get; set; }
-        public MCNK[] MCNK { get; set; } = new MCNK[255];
+        public MCNK[] MCNK { get; set; } = new MCNK[256];
         public MFBO MFBO { get; set; }
         public MTXF MTXF { get; set; }
 
-        public ADT()
-        {
+        public ADT() { }
 
-        }
-
-        public void Load()
+        public void Load(string fileName)
         {
-            var reader = new BinaryReader(File.OpenRead(""));
-            var chunkName = "MH2O";
-            var chunkSize = 123;
-            switch (chunkName)
+            using (var reader = new BinaryReader(File.OpenRead(fileName)))
             {
-                case "MH2O":
-                    var MH2OChunkbytes = reader.ReadBytes(chunkSize);
-
-                    
-                    break;
-                case "":
-
-                    break;
+                while (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    var chunkName = new string(reader.ReadChars(4).Reverse().ToArray());
+                    var chunkSize = reader.ReadInt32();
+                    var chunkType = Type.GetType(chunkName);
+                    if (chunkType != null)
+                    {
+                        // If chunkType is an array, it can only be MCNK
+                        if (chunkType.IsArray)
+                            MCNK[MCNK.Count(c => c != null)] = (MCNK)Activator.CreateInstance(typeof(MCNK), reader.ReadBytes(chunkSize));
+                        else
+                            GetType().GetProperty(chunkName)?.SetValue(this, Activator.CreateInstance(chunkType, reader.ReadBytes(chunkSize)));
+                    }
+                }
             }
         }
 
-        public void Save()
+        public void Write()
         {
             using (var writer = new BinaryWriter(File.OpenWrite("test.adt")))
             {
@@ -63,13 +59,12 @@ namespace CoreADT.ADT
 
                 // Write MHDR later when we got all offsets
                 var positionBeforeMHDR = writer.BaseStream.Position;
-                writer.BaseStream.Position += HeaderSize + MHDR.ChunkSize;
+                writer.BaseStream.Position += _HeaderSize + MHDR.ChunkSize;
 
                 // MCIN
                 MHDR.OffsetMCIN = (uint)writer.BaseStream.Position;
-                writer.Write(MCIN[0].GetChunkHeaderBytes());
-                for (int i = 0; i < 256; i++)
-                    writer.Write(MCIN[i].GetChunkBytes());
+                writer.Write(MCIN.GetChunkHeaderBytes());
+                writer.Write(MCIN.GetChunkBytes());
                 
                 // MTEX
                 MHDR.OffsetMTEX = (uint)writer.BaseStream.Position;
@@ -134,6 +129,5 @@ namespace CoreADT.ADT
                 writer.Write(MHDR.GetChunkBytes());
             }
         }
-
     }
 }
