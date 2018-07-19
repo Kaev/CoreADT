@@ -4,6 +4,19 @@ namespace CoreADT.Helper
 {
     public static class BinaryWriterExtension
     {
+
+        public static void WriteVector2Int(this BinaryWriter writer, Vector2<int> vector)
+        {
+            writer.Write(vector.X);
+            writer.Write(vector.Y);
+        }
+
+        public static void WriteVector2UInt(this BinaryWriter writer, Vector2<uint> vector)
+        {
+            writer.Write(vector.X);
+            writer.Write(vector.Y);
+        }
+
         public static void WriteVector3Int(this BinaryWriter writer, Vector3<int> vector)
         {
             writer.Write(vector.X);

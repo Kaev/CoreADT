@@ -4,6 +4,17 @@ namespace CoreADT.Helper
 {
     public static class BinaryReaderExtension
     {
+
+        public static Vector2<int> ReadVector2Int(this BinaryReader reader)
+        {
+            return new Vector2<int>(reader.ReadInt32(), reader.ReadInt32());
+        }
+
+        public static Vector2<uint> ReadVector2UInt(this BinaryReader reader)
+        {
+            return new Vector2<uint>(reader.ReadUInt32(), reader.ReadUInt32());
+        }
+
         public static Vector3<int> ReadVector3Int(this BinaryReader reader)
         {
             return new Vector3<int>(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32());

@@ -9,7 +9,10 @@ namespace CoreADT.ADT.Chunks
     public class MCNK : Chunk
     {
         public override uint ChunkSize => sizeof(uint) * 23 + sizeof(UInt16) * 2 + sizeof(byte) +
-                                          (uint) ReallyLowQualityTextureingMap.Length + sizeof(float) * 3;
+                                          (uint) ReallyLowQualityTextureingMap.Length + sizeof(float) * 3 +
+                                          MCVT.ChunkSize + MCNR.ChunkSize + MCLY.ChunkSize + MCRF.ChunkSize + (/*if wdt*/ MCAL.ChunkSize) +
+                                          (SizeShadow > 8 && Flags.HasFlag(MCNKFlags.HasMCSH) ? MCSH.ChunkSize : 0) + (NumberSoundEmitters > 0 ? MCSE.ChunkSize : 0) + 
+                                          (SizeLiquid > 0 ? MCLQ.ChunkSize : 0) + MCCV.ChunkSize;
 
         public MCNKFlags Flags { get; set; }
         public Vector2<uint> Index { get; set; }
@@ -62,8 +65,7 @@ namespace CoreADT.ADT.Chunks
         public MCNK(byte[] chunkBytes) : base(chunkBytes)
         {
             Flags = (MCNKFlags)ReadUInt32();
-            Index.X = ReadUInt32();
-            Index.Y = ReadUInt32();
+            Index = this.ReadVector2UInt();
             Layers = ReadUInt32();
             NumberDoodadRefs = ReadUInt32();
             OffsetMCVT = ReadUInt32();
@@ -94,54 +96,183 @@ namespace CoreADT.ADT.Chunks
 
             if (OffsetMCVT > 0)
             {
-
+                BaseStream.Position = OffsetMCVT;
+                MCVT = new MCVT(ReadBytes((int)MCVT.ChunkSize));
             }
 
             if (OffsetMCNR > 0)
             {
-
+                BaseStream.Position = OffsetMCNR;
+                MCNR = new MCNR(ReadBytes((int)MCNR.ChunkSize));
             }
 
             if (OffsetMCLY > 0)
             {
-
+                BaseStream.Position = OffsetMCLY;
+                MCLY = new MCLY(ReadBytes((int)MCLY.ChunkSize));
             }
 
             if (OffsetMCRF > 0)
             {
-
+                BaseStream.Position = OffsetMCRF;
+                MCRF = new MCRF(ReadBytes((int)MCRF.ChunkSize), this);
             }
 
             // TODO: && No WDT file?
-            if (OffsetMCAL > 0)
+            if (OffsetMCAL > 0 && wdt != null)
             {
-
+                BaseStream.Position = OffsetMCAL;
+                MCAL = new MCAL(ReadBytes((int)MCAL.ChunkSize), this, wdt);
             }
 
             if (OffsetMCSH > 0 && SizeShadow > 8 && Flags.HasFlag(MCNKFlags.HasMCSH))
             {
-
+                BaseStream.Position = OffsetMCSH;
+                MCSH = new MCSH(ReadBytes((int)MCSH.ChunkSize));
             }
 
             if (OffsetMCSE > 0 && NumberSoundEmitters > 0)
             {
-
+                BaseStream.Position = OffsetMCSE;
+                MCSE = new MCSE(ReadBytes((int)MCSE.ChunkSize), this);
             }
 
-            if (SizeLiquid > 0 && OffsetMCLQ > 0)
+            if (OffsetMCLQ > 0 && SizeLiquid > 0)
             {
-
+                BaseStream.Position = OffsetMCLQ;
+                MCLQ = new MCLQ(ReadBytes((int)MCLQ.ChunkSize), this);
             }
 
             if (OffsetMCCV > 0)
             {
-
+                BaseStream.Position = OffsetMCCV;
+                MCCV = new MCCV(ReadBytes((int)MCCV.ChunkSize));
             }
 
         }
+
         public override byte[] GetChunkBytes()
         {
-            throw new NotImplementedException();
+            using (var stream = new MemoryStream())
+            {
+                using (var writer = new BinaryWriter(stream))
+                {
+                    writer.Write((uint)Flags);
+                    writer.WriteVector2UInt(Index);
+                    writer.Write(Layers);
+                    writer.Write(NumberDoodadRefs);
+                    var positionOffsetMCVT = BaseStream.Position;
+                    writer.Write(0);
+                    var positionOffsetMCNR = BaseStream.Position;
+                    writer.Write(0);
+                    var positionOffsetMCLY = BaseStream.Position;
+                    writer.Write(0);
+                    var positionOffsetMCRF = BaseStream.Position;
+                    writer.Write(0);
+                    var positionOffsetMCAL = BaseStream.Position;
+                    writer.Write(0);
+                    writer.Write(SizeShadow);
+                    var positionOffsetMCSH = BaseStream.Position;
+                    writer.Write(0);
+                    writer.Write(SizeShadow);
+                    writer.Write(AreaId);
+                    writer.Write(NumberMapObjectRefs);
+                    writer.Write(Holes);
+                    writer.Write(HolesPadding);
+                    for (int i = 0; i < 16; i++)
+                        writer.Write(ReallyLowQualityTextureingMap[i]);
+                    writer.Write(PredTex);
+                    writer.Write(NumberEffectDoodads);
+                    var positionOffsetMCSE = BaseStream.Position;
+                    writer.Write(0);
+                    writer.Write(NumberSoundEmitters);
+                    var positionOffsetMCLQ = BaseStream.Position;
+                    writer.Write(0);
+                    writer.Write(SizeLiquid);
+                    writer.WriteVector3Float(Position);
+                    var positionOffsetMCCV = BaseStream.Position;
+                    writer.Write(0);
+                    writer.Write(Unused1);
+                    writer.Write(Unused2);
+
+                    // Subchunks
+
+                    var positionMCVT = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCVT;
+                    writer.Write(positionMCVT);
+                    BaseStream.Position = positionMCVT;
+                    writer.Write(MCVT.GetChunkHeaderBytes());
+                    writer.Write(MCVT.GetChunkBytes());
+
+                    var positionMCNR = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCNR;
+                    writer.Write(positionMCNR);
+                    BaseStream.Position = positionMCNR;
+                    writer.Write(MCNR.GetChunkHeaderBytes());
+                    writer.Write(MCNR.GetChunkBytes());
+
+                    var positionMCLY = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCLY;
+                    writer.Write(positionMCLY);
+                    BaseStream.Position = positionMCLY;
+                    writer.Write(MCLY.GetChunkHeaderBytes());
+                    writer.Write(MCLY.GetChunkBytes());
+
+                    var positionMCRF = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCRF;
+                    writer.Write(positionMCRF);
+                    BaseStream.Position = positionMCRF;
+                    writer.Write(MCRF.GetChunkHeaderBytes());
+                    writer.Write(MCRF.GetChunkBytes());
+
+                    // if WDT 
+                    var positionMCAL = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCAL;
+                    writer.Write(positionMCAL);
+                    BaseStream.Position = positionMCAL;
+                    writer.Write(MCAL.GetChunkHeaderBytes());
+                    writer.Write(MCAL.GetChunkBytes());
+
+                    if (SizeShadow > 8 && Flags.HasFlag(MCNKFlags.HasMCSH))
+                    {
+                        var positionMCSH = BaseStream.Position;
+                        BaseStream.Position = positionOffsetMCSH;
+                        writer.Write(positionMCSH);
+                        BaseStream.Position = positionMCSH;
+                        writer.Write(MCSH.GetChunkHeaderBytes());
+                        writer.Write(MCSH.GetChunkBytes());
+                    }
+
+                    if (NumberSoundEmitters > 0)
+                    {
+                        var positionMCSE = BaseStream.Position;
+                        BaseStream.Position = positionOffsetMCSE;
+                        writer.Write(positionMCSE);
+                        BaseStream.Position = positionMCSE;
+                        writer.Write(MCSE.GetChunkHeaderBytes());
+                        writer.Write(MCSE.GetChunkBytes());
+                    }
+
+                    if (SizeLiquid > 0)
+                    {
+                        var positionMCLQ = BaseStream.Position;
+                        BaseStream.Position = positionOffsetMCLQ;
+                        writer.Write(positionMCLQ);
+                        BaseStream.Position = positionMCLQ;
+                        writer.Write(MCLQ.GetChunkHeaderBytes());
+                        writer.Write(MCLQ.GetChunkBytes());
+                    }
+
+                    var positionMCCV = BaseStream.Position;
+                    BaseStream.Position = positionOffsetMCCV;
+                    writer.Write(positionMCCV);
+                    BaseStream.Position = positionMCCV;
+                    writer.Write(MCCV.GetChunkHeaderBytes());
+                    writer.Write(MCCV.GetChunkBytes());
+
+                }
+                return stream.ToArray();
+            }
         }
 
         public override byte[] GetChunkHeaderBytes()

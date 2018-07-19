@@ -60,11 +60,6 @@ namespace CoreADT.ADT
                 // Write MHDR later when we got all offsets
                 var positionBeforeMHDR = writer.BaseStream.Position;
                 writer.BaseStream.Position += _HeaderSize + MHDR.ChunkSize;
-
-                // MCIN
-                MHDR.OffsetMCIN = (uint)writer.BaseStream.Position;
-                writer.Write(MCIN.GetChunkHeaderBytes());
-                writer.Write(MCIN.GetChunkBytes());
                 
                 // MTEX
                 MHDR.OffsetMTEX = (uint)writer.BaseStream.Position;
@@ -107,6 +102,18 @@ namespace CoreADT.ADT
                 writer.Write(MH2O.GetChunkBytes());
 
                 // MCNK
+                for (int i = 0; i < MCIN.Entries.Length ; i++)
+                {
+                    MCIN.Entries[i].OffsetMCNK = (uint)writer.BaseStream.Position;
+                    MCIN.Entries[i].ChunkSize = MCNK[i].ChunkSize;
+                    writer.Write(MCNK[i].GetChunkHeaderBytes());
+                    writer.Write(MCNK[i].GetChunkBytes());
+                }
+
+                // MCIN
+                MHDR.OffsetMCIN = (uint)writer.BaseStream.Position;
+                writer.Write(MCIN.GetChunkHeaderBytes());
+                writer.Write(MCIN.GetChunkBytes());
 
                 // MFBO
                 if (MHDR.Flags.HasFlag(MHDRFlags.MFBO))
