@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using CoreADT.WDT;
+﻿using System.IO;
 using CoreADT.ADT.Chunks;
 using CoreADT.ADT.Flags;
 using CoreADT.WDT.Flags;
@@ -17,7 +14,7 @@ namespace CoreADT.ADT.MCALData
 
         public MCALAlphaMap() { }
 
-        public MCALAlphaMap(BinaryReader reader, MCNK parentChunk, WDT wdt, int currentLayer)
+        public MCALAlphaMap(BinaryReader reader, MCNK parentChunk, WDT.WDT wdt, int currentLayer)
         {
             if (parentChunk.MCLY.Layers[currentLayer].Flags.HasFlag(MCLYFlags.CompressedAlphaMap) &&
                     (wdt.MPHD.Flags.HasFlag(MPHDFlags.HasBigAlpha) || wdt.MPHD.Flags.HasFlag(MPHDFlags.MCALSize4096)))
@@ -73,7 +70,7 @@ namespace CoreADT.ADT.MCALData
             }
         }
 
-        public void Write(BinaryWriter writer, MCNK parentChunk, WDT wdt, int currentLayer)
+        public void Write(BinaryWriter writer, MCNK parentChunk, WDT.WDT wdt, int currentLayer)
         {
             if (parentChunk.MCLY.Layers[currentLayer].Flags.HasFlag(MCLYFlags.CompressedAlphaMap) &&
                     (wdt.MPHD.Flags.HasFlag(MPHDFlags.HasBigAlpha) || wdt.MPHD.Flags.HasFlag(MPHDFlags.MCALSize4096)))
@@ -114,16 +111,39 @@ namespace CoreADT.ADT.MCALData
             else
             {
                 // Uncompressed (2048) - TODO build in FLAG_DO_NOT_FIX_ALPHA_MAP 
-                for (int y = 0; y < 64; y++)
+                if (parentChunk.Flags.HasFlag(MCNKFlags.DoNotFixAlphaMap))
                 {
-                    for (int x = 0; x < 64; x += 2)
+                    for (int y = 0; y < 63; y++)
                     {
-                        var byte1 = AlphaMap[x, y];
-                        var byte2 = AlphaMap[x + 1, y];
-                        byte fullByte = 0;
-                        fullByte = (byte)(fullByte | byte1 << 4);
-                        fullByte = (byte)(fullByte | byte2);
-                        writer.Write(fullByte);
+                        for (int x = 0; x < 63; x += 2)
+                        {
+                            var byte1 = AlphaMap[x, y];
+                            var byte2 = AlphaMap[x + 1, y];
+                            byte fullByte = 0;
+                            fullByte = (byte)(fullByte | byte1 << 4);
+                            fullByte = (byte)(fullByte | byte2);
+                            writer.Write(fullByte);
+                        }
+
+                        if (y == 62)
+                        {
+                            var byte1 = AlphaMap[]
+                        }
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < 64; y++)
+                    {
+                        for (int x = 0; x < 64; x += 2)
+                        {
+                            var byte1 = AlphaMap[x, y];
+                            var byte2 = AlphaMap[x + 1, y];
+                            byte fullByte = 0;
+                            fullByte = (byte)(fullByte | byte1 << 4);
+                            fullByte = (byte)(fullByte | byte2);
+                            writer.Write(fullByte);
+                        }
                     }
                 }
             }

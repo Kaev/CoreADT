@@ -62,7 +62,7 @@ namespace CoreADT.ADT.Chunks
         public MCSE MCSE { get; set; }
         #endregion
 
-        public MCNK(byte[] chunkBytes) : base(chunkBytes)
+        public MCNK(byte[] chunkBytes, WDT.WDT wdt) : base(chunkBytes)
         {
             Flags = (MCNKFlags)ReadUInt32();
             Index = this.ReadVector2UInt();
@@ -148,7 +148,7 @@ namespace CoreADT.ADT.Chunks
                 BaseStream.Position = OffsetMCCV;
                 MCCV = new MCCV(ReadBytes((int)MCCV.ChunkSize));
             }
-
+            Close();
         }
 
         public override byte[] GetChunkBytes()

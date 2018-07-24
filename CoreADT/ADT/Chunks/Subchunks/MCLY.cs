@@ -15,6 +15,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
             Layers = new MCLYLayer[layerCount];
             for (int i = 0; i < layerCount; i++)
                 Layers[i] = new MCLYLayer(this);
+            Close();
         }
 
         public override byte[] GetChunkBytes()

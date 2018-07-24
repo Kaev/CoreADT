@@ -5,7 +5,7 @@ namespace CoreADT.WDT.Chunks
 {
     public class MPHD : Chunk
     {
-        public override uint ChunkSize { get; set; } = sizeof(uint) * 8;
+        public override uint ChunkSize { get; } = sizeof(uint) * 8;
 
         public MPHDFlags Flags { get; set; }
         public uint Something { get; set; }
@@ -17,6 +17,7 @@ namespace CoreADT.WDT.Chunks
             Something = ReadUInt32();
             for (int i = 0; i < 7; i++)
                 Unused[i] = ReadUInt32();
+            Close();
         }
 
         public override byte[] GetChunkBytes()

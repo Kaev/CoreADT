@@ -16,7 +16,6 @@ namespace CoreADT.WDT.Chunks
                 Filenames.ForEach(f => size += (uint)f.Length + 1);
                 return size;
             }
-            set => ChunkSize = value;
         }
 
         public List<string> Filenames { get; set; } = new List<string>();

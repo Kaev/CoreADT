@@ -43,6 +43,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
             NumberFlowvs = ReadUInt32();
             for (int i = 0; i < 3; i++)
                 Flowvs[i].Read(this);
+            Close();
         }
 
         

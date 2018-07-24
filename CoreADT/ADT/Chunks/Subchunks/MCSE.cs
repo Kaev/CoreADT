@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CoreADT.ADT.MCSEData;
-using CoreADT.Helper;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {

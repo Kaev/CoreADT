@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using CoreADT.ADT.Flags;
 using CoreADT.ADT.MCALData;
-using CoreADT.WDT;
-using CoreADT.WDT.Flags;
 
 namespace CoreADT.ADT.Chunks.Subchunks
 {
@@ -14,7 +11,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
 
         public MCALAlphaMap[] AlphaMaps { get; set; }
 
-        public MCAL(byte[] chunkBytes, MCNK parentChunk, WDT wdt = null) : base(chunkBytes)
+        public MCAL(byte[] chunkBytes, MCNK parentChunk, WDT.WDT wdt) : base(chunkBytes)
         {
             AlphaMaps = new MCALAlphaMap[parentChunk.MCLY.Layers.Length];
             for (int i = 0; i < parentChunk.MCLY.Layers.Length; i++)
@@ -28,7 +25,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
             throw new NotImplementedException();
         }
 
-        public byte[] GetChunkBytes(MCNK parentChunk, WDT wdt)
+        public byte[] GetChunkBytes(MCNK parentChunk, WDT.WDT wdt)
         {
             using (var stream = new MemoryStream())
             {

@@ -25,12 +25,15 @@ namespace CoreADT.ADT
         public MCNK[] MCNK { get; set; } = new MCNK[256];
         public MFBO MFBO { get; set; }
         public MTXF MTXF { get; set; }
+        public WDT.WDT WdtFile { get; set; }
 
         public ADT() { }
 
-        public void Load(string fileName)
+        public void Load(string adtFileName, string wdtFileName)
         {
-            using (var reader = new BinaryReader(File.OpenRead(fileName)))
+            WdtFile = new WDT.WDT();
+            WdtFile.Load(wdtFileName);
+            using (var reader = new BinaryReader(File.OpenRead(adtFileName)))
             {
                 while (reader.BaseStream.Position < reader.BaseStream.Length)
                 {
@@ -41,7 +44,7 @@ namespace CoreADT.ADT
                     {
                         // If chunkType is an array, it can only be MCNK
                         if (chunkType.IsArray)
-                            MCNK[MCNK.Count(c => c != null)] = (MCNK)Activator.CreateInstance(typeof(MCNK), reader.ReadBytes(chunkSize));
+                            MCNK[MCNK.Count(c => c != null)] = (MCNK)Activator.CreateInstance(typeof(MCNK), reader.ReadBytes(chunkSize), WdtFile);
                         else
                             GetType().GetProperty(chunkName)?.SetValue(this, Activator.CreateInstance(chunkType, reader.ReadBytes(chunkSize)));
                     }

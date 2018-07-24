@@ -11,7 +11,7 @@ namespace CoreADT.WDT.Chunks
     public class MODF : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint) * 2 + sizeof(float) * 12 + sizeof(UInt16) * 4;
+        public override uint ChunkSize { get; } = sizeof(uint) * 2 + sizeof(float) * 12 + sizeof(UInt16) * 4;
 
         public uint MWIDEntry { get; set; }
         public uint UniqueId { get; set; }

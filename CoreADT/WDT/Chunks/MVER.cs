@@ -5,7 +5,7 @@ namespace CoreADT.WDT.Chunks
     public class MVER : Chunk
     {
 
-        public override uint ChunkSize { get; set; } = sizeof(uint);
+        public override uint ChunkSize { get; } = sizeof(uint);
 
         public uint Version { get; set; }
 

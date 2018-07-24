@@ -14,6 +14,7 @@ namespace CoreADT.ADT.Chunks.Subchunks
         {
             for (int i = 0; i < 145; i++)
                 Entries[i] = new MCCVEntry(this);
+            Close();
         }
 
         
